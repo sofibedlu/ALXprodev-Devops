@@ -1,7 +1,11 @@
 #!/bin/bash
 
+OUTPUT_DIR="./pokemon_data"
 ERROR_FILE="errors.txt"
 API_BASE_URL="https://pokeapi.co/api/v2/pokemon"
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
 
 # List of Pokémon
 pokemons=("Bulbasaur" "Ivysaur" "Venusaur" "Charmander" "Charmeleon")
@@ -17,7 +21,7 @@ for pokemon in "${pokemons[@]}"; do
   API_URL="$API_BASE_URL/$pokemon_lc"
   
   # Fetch data and capture HTTP status code
-  response=$(curl -s -w "%{http_code}" -o "${pokemon_lc}.json" "$API_URL")
+  response=$(curl -s -w "%{http_code}" -o "$OUTPUT_DIR/${pokemon_lc}.json" "$API_URL")
   
   # Check if the request was successful
   if [ "$response" -ne 200 ]; then
