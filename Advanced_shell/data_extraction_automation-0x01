@@ -1,0 +1,23 @@
+#!/bin/bash
+
+OUTPUT_FILE="data.json"
+ERROR_FILE="errors.txt"
+
+# Check if data.json exists
+if [ ! -f "$OUTPUT_FILE" ]; then
+  echo "data.json file not found." >> "$ERROR_FILE"
+  exit 1
+fi
+
+# Extract Pokémon's name, height, weight, and type
+name=$(jq -r '.name' "$OUTPUT_FILE" | sed 's/.*/\u&/')
+height=$(jq -r '.height' "$OUTPUT_FILE")
+weight=$(jq -r '.weight' "$OUTPUT_FILE")
+type=$(jq -r '.types[0].type.name' "$OUTPUT_FILE" | sed 's/.*/\u&/')
+
+# Convert height from decimeters to meters and weight from hectograms to kilograms
+formatted_height=$(awk "BEGIN {printf \"%.1f\", $height/10}")
+formatted_weight=$(awk "BEGIN {printf \"%.0f\", $weight/10}")
+
+# Display the formatted output
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
