@@ -2,3 +2,4 @@ Failed to fetch data for Pikachu. Status code: 404
 Failed to fetch data for Pikachu. Status code: 404
 Failed to fetch data for Pikachu. Status code: 404
 data.json file not found.
+Failed to fetch data for Bulbasaur2 after 3 attempts. Status code: 404

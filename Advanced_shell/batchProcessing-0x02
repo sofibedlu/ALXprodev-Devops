@@ -19,17 +19,30 @@ for pokemon in "${pokemons[@]}"; do
   
   # Construct API URL
   API_URL="$API_BASE_URL/$pokemon_lc"
+
+  # Initialize retry count
+  retries=0
+  max_retries=3
   
-  # Fetch data and capture HTTP status code
-  response=$(curl -s -w "%{http_code}" -o "$OUTPUT_DIR/${pokemon_lc}.json" "$API_URL")
-  
-  # Check if the request was successful
-  if [ "$response" -ne 200 ]; then
-    echo "Failed to fetch data for $pokemon. Status code: $response" >> "$ERROR_FILE"
-  else
-    echo "Successfully fetched data for $pokemon."
+  while [ $retries -lt $max_retries ]; do
+    # Fetch data and capture HTTP status code
+    response=$(curl -s -w "%{http_code}" -o "$OUTPUT_DIR/${pokemon_lc}.json" "$API_URL")
+    
+    # Check if the request was successful
+    if [ "$response" -eq 200 ]; then
+      echo "Successfully fetched data for $pokemon."
+      break
+    else
+      retries=$((retries + 1))
+      echo "Attempt $retries failed for $pokemon. Retrying..."
+      sleep "$DELAY"
+    fi
+  done
+
+  if [ $retries -eq $max_retries ]; then
+    echo "Failed to fetch data for $pokemon after $max_retries attempts. Status code: $response" >> "$ERROR_FILE"
   fi
-  
+
   # Wait for the specified delay to handle rate-limiting
   sleep "$DELAY"
 done
